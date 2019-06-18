@@ -27,10 +27,6 @@
  * IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef VERIFY_PRINT_ERROR
-#define VERIFY_PRINT_ERROR
-#endif // VERIFY_PRINT_ERROR
-
 #define FARF_ERROR 1
 
 #include <stdlib.h>
@@ -200,7 +196,7 @@ int fastrpc_perf_init(int dev) {
       perf_dsp_enable();
 bail:
    if (nErr) {
-      FARF(ERROR, "fastrpc perf init failed");
+      FARF(HIGH, "fastrpc perf init failed");
       p->perf_on = 0;
    }
    return nErr;

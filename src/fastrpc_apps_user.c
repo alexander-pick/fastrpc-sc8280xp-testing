@@ -814,7 +814,7 @@ int remote_handle_invoke(remote_handle handle, uint32_t sc, remote_arg* pra) {
 	VERIFY(AEE_SUCCESS == (nErr = remote_handle_invoke_domain(domain, handle, sc, pra)));
 bail:
 	if (nErr != AEE_SUCCESS) {
-		FARF(ERROR, "Error %x: remote handle invoke failed. domain %d, handle %x, sc %x, pra %p\n", nErr, domain, handle, sc, pra);
+		FARF(HIGH, "Error %x: remote handle invoke failed. domain %d, handle %x, sc %x, pra %p\n", nErr, domain, handle, sc, pra);
 	}
 	return nErr;
 }
@@ -829,7 +829,7 @@ int remote_handle64_invoke(remote_handle64 local, uint32_t sc, remote_arg* pra) 
 	VERIFY(AEE_SUCCESS == (nErr = remote_handle_invoke_domain(domain, remote, sc, pra)));
 bail:
 	if (nErr != AEE_SUCCESS) {
-		FARF(ERROR, "Error %x: remote handle64 invoke failed. domain %d, handle %p, sc %x, pra %p\n", nErr, domain, &local, sc, pra);
+		FARF(HIGH, "Error %x: remote handle64 invoke failed. domain %d, handle %p, sc %x, pra %p\n", nErr, domain, &local, sc, pra);
 	}
 	return nErr;
 }
@@ -915,7 +915,7 @@ bail:
    if(nErr) {
       if(h)
          remote_handle_close(h);
-      FARF(ERROR, "Error %x: remote handle64 open failed. name %s\n", nErr, name);
+      FARF(HIGH, "Error %x: remote handle64 open failed. name %s\n", nErr, name);
    }
    return nErr;
 }
@@ -929,7 +929,7 @@ int remote_handle_close(remote_handle h)
    VERIFY(AEE_SUCCESS == (nErr = dlerr));
 bail:
    if (nErr != AEE_SUCCESS) {
-	FARF(ERROR, "Error %x: remote handle close failed. error %s\n", nErr, dlerrstr);
+	FARF(HIGH, "Error %x: remote handle close failed. error %s\n", nErr, dlerrstr);
    }
    return nErr;
 }
@@ -948,7 +948,7 @@ bail:
       domain_deinit(domain);
    }
    if (nErr != AEE_SUCCESS) {
-	FARF(ERROR, "Error %x: remote handle64 close failed.\n", nErr);
+	FARF(HIGH, "Error %x: remote handle64 close failed.\n", nErr);
    }
    return nErr;
 }

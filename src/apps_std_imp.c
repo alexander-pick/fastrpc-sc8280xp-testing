@@ -746,7 +746,7 @@ bail:
    FREEIF(absName);
    FREEIF(dirListBuf);
    if (nErr != AEE_SUCCESS) {
-	VERIFY_EPRINTF("Error %x: fopen failed for %s. (%s)", nErr, name, strerror(ERRNO));
+	VERIFY_IPRINTF("Error %x: fopen failed for %s. (%s)", nErr, name, strerror(ERRNO));
    }
    return nErr;
 }

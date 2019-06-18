@@ -339,7 +339,7 @@ static void* file_watcher_thread(void *arg) {
             VERIFY_EPRINTF("%s: Error polling for file change. Runtime FARF will not work for this process. errno=%x !", log_config_watcher[dom].fileToWatch, errno);
             break;
         } else if (pfd[1].revents & POLLIN) { // Check for exit
-            VERIFY_EPRINTF("Received exit.\n");
+            VERIFY_IPRINTF("Received exit.\n");
             break;
         } else {
             length = read( log_config_watcher[dom].fd, buffer, EVENT_BUF_LEN );
