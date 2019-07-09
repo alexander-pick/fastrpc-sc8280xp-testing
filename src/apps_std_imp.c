@@ -572,7 +572,7 @@ __QAIC_IMPL_EXPORT int __QAIC_IMPL(apps_std_unsetenv)(const char* name) __QAIC_I
 
 
 #if (defined LE_ENABLE)
-static char* ADSP_LIBRARY_PATH=";/usr/lib/rfsa/adsp;/usr/lib;/dsp";
+static char* ADSP_LIBRARY_PATH=";/usr/lib/rfsa/adsp;/usr/lib;/dsp;/usr/share/fastrpc";
 static char* ADSP_AVS_CFG_PATH=";/etc/acdbdata/";
 #elif (defined __BRILLO__)
 static char* ADSP_LIBRARY_PATH=";/system/etc/lib/rfsa/adsp;/system/vendor/etc/lib/rfsa/adsp;/dsp";
