@@ -908,8 +908,8 @@ int remote_handle64_open(const char* name, remote_handle64 *ph)
    domain = get_domain_from_name(name);
    VERIFYC(domain >= 0, AEE_EINVALIDDOMAIN);
    VERIFY(AEE_SUCCESS == (nErr = fastrpc_init_once()));
-   hlist[domain].domainsupport = 1;
    VERIFY(AEE_SUCCESS == (nErr = remote_handle_open_domain(domain, name, &h)));
+   hlist[domain].domainsupport = 1;
    VERIFY(AEE_SUCCESS == (nErr = alloc_handle(domain, h, &hinfo)));
    *ph = hinfo->local;
 bail:
