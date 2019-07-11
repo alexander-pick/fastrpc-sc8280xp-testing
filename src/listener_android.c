@@ -91,7 +91,8 @@ struct listener {
    int eventfd;
 };
 
-static struct listener linfo[NUM_DOMAINS_EXTEND];
+static struct listener linfo[NUM_DOMAINS_EXTEND] =
+{ [0 ... NUM_DOMAINS_EXTEND - 1] = { .thread = 0, .eventfd = -1 } };
 
 //TODO: fix this to work over any number of buffers
 //      needs qaic to support extra buffers
