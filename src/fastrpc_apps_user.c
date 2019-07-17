@@ -199,6 +199,7 @@ struct handle_list {
 	int nondomainsupport;
 	int kmem_support;
 	int dev;
+	int initialized;
 	int setmode;
 	uint32_t mode;
 	uint32_t info;
@@ -217,7 +218,6 @@ static struct dma_handle_info dhandles[MAX_DMA_HANDLES];
 static int dma_handle_count = 0;
 static pthread_key_t tlsKey = INVALID_KEY;
 
-static int gdev = -1;
 static int fastrpc_trace = 0;
 
 extern int listener_android_domain_init(int domain);
@@ -1349,6 +1349,7 @@ static void domain_deinit(int domain) {
       hlist[domain].msghandle = 0;
       hlist[domain].domainsupport = 0;
       hlist[domain].nondomainsupport = 0;
+      hlist[domain].initialized = 0;
       hlist[domain].dev = -1;
       hlist[domain].dsppd = attach_guestos(domain);
       if (hlist[domain].dsppdname != NULL)
@@ -1598,21 +1599,18 @@ bail:
 
 int open_device_node(int domain) {
 	int nErr=0;
-	int dev=-1;
-	
+
 	VERIFY(!fastrpc_init_once());
 	
 	pthread_mutex_lock(&hlist[domain].mut);
-	if( hlist[domain].dev == -1 || gdev == -1) {
-		dev = open_device_node_internal(domain);
-		gdev = dev;
-		hlist[domain].dev=dev;
-	} else {
-		dev=gdev;
+	if(hlist[domain].dev == -1) {
+		hlist[domain].dev = open_device_node_internal(domain);
+		/* the domain was opened but not apps initialized */
+		hlist[domain].initialized = 0;
 	}
 	pthread_mutex_unlock(&hlist[domain].mut);
 bail:
-	return dev;
+	return hlist[domain].dev;
 }
 
 static int apps_dev_init(int domain) {
@@ -1627,16 +1625,14 @@ static int apps_dev_init(int domain) {
 	pthread_mutex_lock(&hlist[domain].mut);
 	pthread_setspecific(tlsKey, (void*)&hlist[domain]);
 	battach = hlist[domain].dsppd;
-	if(hlist[domain].dev == -1) {
-		if(gdev == -1) {
+	if(!hlist[domain].initialized) {
+		if (hlist[domain].dev == -1) {
 			dev = open_device_node_internal(domain);
-			gdev= dev;
 			hlist[domain].dev = dev;
-		} else {
-			dev = gdev;
 		}
 		VERIFYC(dev >= 0, AEE_EFOPEN);
 		FARF(HIGH, "%s: device %d opened with info 0x%x (attach %d)", __func__, dev, hlist[domain].info, battach);
+		hlist[domain].initialized = 1;
 		//keep the memory we used to allocate
 		if (battach == GUEST_OS || battach == GUEST_OS_SHARED) {
 			FARF(HIGH, "%s: attaching to guest OS for domain %d", __func__, domain);
@@ -1687,6 +1683,7 @@ static int apps_dev_init(int domain) {
 		} else {
 			FARF(ERROR, "Error: %s called for unknown mode %d", __func__, battach);
 		}
+
 		dev = -1;
 	}
 bail:
