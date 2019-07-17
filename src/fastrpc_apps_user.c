@@ -1684,15 +1684,13 @@ static int apps_dev_init(int domain) {
 			FARF(ERROR, "Error: %s called for unknown mode %d", __func__, battach);
 		}
 
+		/* do not close the device if all went well */
 		dev = -1;
 	}
 bail:
 	pthread_mutex_unlock(&hlist[domain].mut);
 	if(uproc.file) {
 		rpcmem_free_internal((void*)uproc.file);
-	}
-	if(dev >= 0) {
-		close(dev);
 	}
 	if(fh != -1) {
 		apps_std_fclose(fh);
