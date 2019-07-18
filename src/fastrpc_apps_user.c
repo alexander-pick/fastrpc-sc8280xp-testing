@@ -1322,15 +1322,14 @@ static int attach_guestos(int domain) {
 
 static void domain_deinit(int domain) {
    QNode *pn;
-   int olddev;
    remote_handle64 handle;
 
    if(!hlist) {
       return;
    }
-   olddev = hlist[domain].dev;
-   FARF(HIGH, "domain_deinit for domain %d: dev %d \n", domain, olddev);
-   if(olddev != -1) {
+
+   FARF(HIGH, "domain_deinit for domain %d: dev %d \n", domain, hlist[domain].dev);
+   if(hlist[domain].dev != -1) {
       handle = get_adsp_current_process1_handle(domain);
       if(handle != INVALID_HANDLE) {
          adsp_current_process1_exit(handle);
@@ -1351,15 +1350,19 @@ static void domain_deinit(int domain) {
       hlist[domain].domainsupport = 0;
       hlist[domain].nondomainsupport = 0;
       hlist[domain].initialized = 0;
-      hlist[domain].dev = -1;
       hlist[domain].dsppd = attach_guestos(domain);
       if (hlist[domain].dsppdname != NULL)
       {
          free(hlist[domain].dsppdname);
          hlist[domain].dsppdname = NULL;
       }
+
       FARF(HIGH, "exit: closing %d, rpc errors are expected.\n", domain);
-      close(olddev);
+
+      if (close(hlist[domain].dev))
+	      FARF(ERROR, "exit: failed to close file descriptor for domain %d\n", domain);
+
+      hlist[domain].dev = -1;
    }
    if(hlist[domain].pdmem) {
       rpcmem_free_internal(hlist[domain].pdmem);
