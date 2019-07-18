@@ -1616,7 +1616,6 @@ bail:
 
 static int apps_dev_init(int domain) {
 	int nErr = AEE_SUCCESS;
-	int dev = -1;
 	struct fastrpc_init_create uproc = {0};
 	apps_std_FILE fh = -1;
 	int battach;
@@ -1627,17 +1626,16 @@ static int apps_dev_init(int domain) {
 	pthread_setspecific(tlsKey, (void*)&hlist[domain]);
 	battach = hlist[domain].dsppd;
 	if(!hlist[domain].initialized) {
-		if (hlist[domain].dev == -1) {
-			dev = open_device_node_internal(domain);
-			hlist[domain].dev = dev;
-		}
-		VERIFYC(dev >= 0, AEE_EFOPEN);
-		FARF(HIGH, "%s: device %d opened with info 0x%x (attach %d)", __func__, dev, hlist[domain].info, battach);
+		if (hlist[domain].dev == -1)
+			hlist[domain].dev = open_device_node_internal(domain);
+
+		VERIFYC(hlist[domain].dev >= 0, AEE_EFOPEN);
+		FARF(HIGH, "%s: device %d opened with info 0x%x (attach %d)", __func__, hlist[domain].dev, hlist[domain].info, battach);
 		hlist[domain].initialized = 1;
 		//keep the memory we used to allocate
 		if (battach == GUEST_OS || battach == GUEST_OS_SHARED) {
 			FARF(HIGH, "%s: attaching to guest OS for domain %d", __func__, domain);
-			VERIFY(!ioctl(dev, FASTRPC_IOCTL_INIT_ATTACH) || errno == ENOTTY);
+			VERIFY(!ioctl(hlist[domain].dev, FASTRPC_IOCTL_INIT_ATTACH) || errno == ENOTTY);
 		} else if (battach == USER_PD) {
 			uint64 len = 0;
 			uint64 filelen = 0;
@@ -1677,16 +1675,13 @@ static int apps_dev_init(int domain) {
 				uproc.siglen = siglen;
 				uproc.filelen = len + siglen;
 			}
-			nErr = ioctl(dev, FASTRPC_IOCTL_INIT_CREATE, (unsigned long)&uproc);
+			nErr = ioctl(hlist[domain].dev, FASTRPC_IOCTL_INIT_CREATE, (unsigned long)&uproc);
 			if (nErr == AEE_SUCCESS) {
 				FARF(ALWAYS, "Successfully created user PD on domain %d (attrs 0x%x)", domain, hlist[domain].procattrs);
 			}
 		} else {
 			FARF(ERROR, "Error: %s called for unknown mode %d", __func__, battach);
 		}
-
-		/* do not close the device if all went well */
-		dev = -1;
 	}
 bail:
 	pthread_mutex_unlock(&hlist[domain].mut);
