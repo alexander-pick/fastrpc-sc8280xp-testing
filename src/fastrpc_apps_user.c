@@ -1754,7 +1754,7 @@ static int open_dev(int domain) {
    static pthread_once_t pl = PTHREAD_ONCE_INIT;
    int init = 0, nErr = AEE_SUCCESS;
 
-   if(hlist && hlist[domain].dev != -1) {
+   if(hlist && hlist[domain].dev != -1 && hlist[domain].initialized) {
       if(0 == pthread_getspecific(tlsKey)) {
          pthread_setspecific(tlsKey, (void*)&hlist[domain]);
       }
@@ -1764,7 +1764,7 @@ static int open_dev(int domain) {
    VERIFY(AEE_SUCCESS == (nErr = pthread_once(&pl, (void*)pl_init)));
    init = 1;
    pthread_mutex_lock(&hlist[domain].init);
-   if(hlist && hlist[domain].dev != -1) {
+   if(hlist && hlist[domain].dev != -1 && hlist[domain].initialized) {
       goto bail;
    }
    VERIFY(AEE_SUCCESS == (nErr = apps_dev_init(domain)));
