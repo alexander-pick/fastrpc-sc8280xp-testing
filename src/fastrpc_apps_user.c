@@ -1728,7 +1728,10 @@ remote_handle64 get_adsp_current_process1_handle(int domain) {
    return hlist[domain].cphandle;
 bail:
    if (nErr != AEE_SUCCESS) {
-	FARF(ERROR, "Error %x: adsp current process handle failed. domain %d\n", nErr, domain);
+        if (hlist[domain].domainsupport)
+		FARF(ERROR, "Error %x: adsp current process handle failed. domain %d\n", nErr, domain);
+	else if (!hlist[domain].nondomainsupport)
+		FARF(ERROR, "Error %x: adsp current process handle failed. domain %d\n", nErr, domain);
    }
    return INVALID_HANDLE;
 }
