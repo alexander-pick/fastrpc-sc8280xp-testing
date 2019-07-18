@@ -1328,6 +1328,7 @@ static void domain_deinit(int domain) {
       return;
    }
 
+   pthread_mutex_lock(&hlist[domain].mut);
    FARF(HIGH, "domain_deinit for domain %d: dev %d \n", domain, hlist[domain].dev);
    if(hlist[domain].dev != -1) {
       handle = get_adsp_current_process1_handle(domain);
@@ -1336,6 +1337,7 @@ static void domain_deinit(int domain) {
       } else {
          adsp_current_process_exit();
       }
+
       listener_android_domain_deinit(domain);
       deinitFileWatcher(domain);
       fastrpc_perf_deinit();
@@ -1368,6 +1370,7 @@ static void domain_deinit(int domain) {
       rpcmem_free_internal(hlist[domain].pdmem);
       hlist[domain].pdmem = NULL;
    }
+   pthread_mutex_unlock(&hlist[domain].mut);
 }
 
 #define ALIGN_B(p, a)	      (((p) + ((a) - 1)) & ~((a) - 1))
@@ -1850,6 +1853,9 @@ static void exit_thread(void *value)
 static int fastrpc_apps_user_init() {
 	int nErr = AEE_SUCCESS, i;
 
+	pthread_mutexattr_t attr;
+	pthread_mutexattr_init(&attr);
+	pthread_mutexattr_settype(&attr, PTHREAD_MUTEX_RECURSIVE);
 	pthread_mutex_init(&fdlist.mut, 0);
 	QList_Ctor(&fdlist.ql);
 	std_memset(dhandles, 0, sizeof(dhandles));
@@ -1864,10 +1870,11 @@ static int fastrpc_apps_user_init() {
 		hlist[i].th_params.reqID = 0;
 		hlist[i].dsppd = attach_guestos(i);
 		hlist[i].dsppdname = NULL;
-		pthread_mutex_init(&hlist[i].mut, 0);
+		pthread_mutex_init(&hlist[i].mut, &attr);
 		pthread_mutex_init(&hlist[i].init, 0);
 		QList_Ctor(&hlist[i].ql);
 	}
+	pthread_mutexattr_destroy(&attr);
 	VERIFY(AEE_SUCCESS == (nErr = pthread_key_create(&tlsKey, exit_thread)));
 	VERIFY(AEE_SUCCESS == (nErr = PL_INIT(rpcmem)));
 	VERIFY(AEE_SUCCESS == (nErr = PL_INIT(apps_mem)));
