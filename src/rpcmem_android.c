@@ -166,7 +166,6 @@ void rpcmem_free_internal(void *po)
 	{
 		int dev = rpcmem_open_dev();
 
-		VERIFY((0 == ioctl(dev, FASTRPC_IOCTL_FREE_DMA_BUFF, (unsigned long)&rfree->fd)) || errno == ENOTTY);
 		munmap(rfree->buf, rfree->size);
 		free(rfree);
 	}
