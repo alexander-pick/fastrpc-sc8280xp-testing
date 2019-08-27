@@ -748,7 +748,7 @@ static int fdlist_fd_to_buf(void *buf)
 
 int remote_handle_invoke_domain(int domain, remote_handle handle, uint32_t sc, remote_arg* pra) {
     struct fastrpc_invoke invoke;
-	struct fastrpc_invoke_args *args;
+	struct fastrpc_invoke_args *args = NULL;
 	int bufs, i, req, nErr = 0;
 	int dev;
 	VERIFY(dev != -1);
@@ -795,7 +795,9 @@ int remote_handle_invoke_domain(int domain, remote_handle handle, uint32_t sc, r
     FARF(HIGH,"debug:sc:%x,handle:%x\n",sc,handle);
 	nErr = ioctl(dev, req, (unsigned long)&invoke);
 bail:
-	free(args);
+	if (args)
+		free(args);
+
 	return nErr;
 }
 
