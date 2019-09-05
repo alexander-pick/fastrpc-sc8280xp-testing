@@ -107,7 +107,7 @@ adsprpcd_LDADD =  $(top_builddir)/src/libadsp_default_listener.la $(top_builddir
 
 
 cdsprpcddir = $(libdir)
-cdsprpcd_SOURCES = $(adsprpcd_SOURCES)
+cdsprpcd_SOURCES = cdsprpcd.c
 cdsprpcd_DEPENDENCIES = libcdsp_default_listener.la libcdsprpc.la
 cdsprpcd_CFLAGS = -I$(top_srcdir)/inc -DDEFAULT_DOMAIN_ID=3
 cdsprpcd_LDADD =  $(top_builddir)/src/libcdsp_default_listener.la $(top_builddir)/src/libcdsprpc.la  -lpthread -lm -ldl 
