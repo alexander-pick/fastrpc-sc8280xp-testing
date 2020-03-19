@@ -44,7 +44,8 @@ libadsp_default_listener_la_SOURCES = adsp_default_listener.c \
 				adsp_default_listener_stub.c \
 				std.c \
 				std_mem.c
-libadsp_default_listener_la_LDFLAGS = -ldl -lpthread -lm -shared
+libadsp_default_listener_la_DEPENDENCIES = libadsprpc.la
+libadsp_default_listener_la_LDFLAGS = $(top_builddir)/src/libadsprpc.la -ldl -lpthread -lm -shared
 libadsp_default_listener_la_CFLAGS = -I$(top_srcdir)/inc $(ADSP_CFLAGS)
 
 cdsprpcdir = $(libdir)
@@ -94,21 +95,23 @@ libcdsp_default_listener_la_SOURCES = adsp_default_listener.c \
 				adsp_default_listener_stub.c \
 				std.c \
 				std_mem.c
-libcdsp_default_listener_la_LDFLAGS = -ldl -lpthread -lm -shared
+
+libcdsp_default_listener_la_DEPENDENCIES = libcdsprpc.la
+libcdsp_default_listener_la_LDFLAGS = $(top_builddir)/src/libcdsprpc.la -ldl -lpthread -lm -shared
 libcdsp_default_listener_la_CFLAGS = -I$(top_srcdir)/inc  $(CDSP_CFLAGS)
 
 bin_PROGRAMS = adsprpcd cdsprpcd
 
 adsprpcddir = $(libdir)
 adsprpcd_SOURCES = adsprpcd.c
-adsprpcd_DEPENDENCIES = libadsp_default_listener.la libadsprpc.la
+adsprpcd_DEPENDENCIES = libadsp_default_listener.la
 adsprpcd_CFLAGS = -I$(top_srcdir)/inc -DDEFAULT_DOMAIN_ID=0
-adsprpcd_LDADD =  $(top_builddir)/src/libadsp_default_listener.la $(top_builddir)/src/libadsprpc.la  -lpthread -lm -ldl 
+adsprpcd_LDADD =  $(top_builddir)/src/libadsp_default_listener.la -lpthread -lm -ldl
 
 
 cdsprpcddir = $(libdir)
 cdsprpcd_SOURCES = cdsprpcd.c
-cdsprpcd_DEPENDENCIES = libcdsp_default_listener.la libcdsprpc.la
+cdsprpcd_DEPENDENCIES = libcdsp_default_listener.la
 cdsprpcd_CFLAGS = -I$(top_srcdir)/inc -DDEFAULT_DOMAIN_ID=3
-cdsprpcd_LDADD =  $(top_builddir)/src/libcdsp_default_listener.la $(top_builddir)/src/libcdsprpc.la  -lpthread -lm -ldl 
+cdsprpcd_LDADD =  $(top_builddir)/src/libcdsp_default_listener.la -lpthread -lm -ldl
 
