@@ -83,3 +83,5 @@ cdsprpcd_DEPENDENCIES = libcdsp_default_listener.la
 cdsprpcd_CFLAGS = -I$(top_srcdir)/inc -DDEFAULT_DOMAIN_ID=3
 cdsprpcd_LDADD =  -ldl
 
+otherincludedir = $(includedir)/fastrpc
+otherinclude_HEADERS = $(top_srcdir)/inc/*.h
