@@ -68,7 +68,21 @@ libcdsp_default_listener_la_DEPENDENCIES = libcdsprpc.la
 libcdsp_default_listener_la_LDFLAGS = libcdsprpc.la -shared -module -avoid-version
 libcdsp_default_listener_la_CFLAGS = $(CDSP_CFLAGS)
 
-bin_PROGRAMS = adsprpcd cdsprpcd
+SDSP_CFLAGS = $(LIBDSPRPC_CFLAGS) -DDEFAULT_DOMAIN_ID=2
+
+lib_LTLIBRARIES += libsdsprpc.la
+libsdsprpc_la_SOURCES = $(LIBDSPRPC_SOURCES)
+libsdsprpc_la_LDFLAGS = -ldl -lpthread -lm
+libsdsprpc_la_CFLAGS = $(SDSP_CFLAGS)
+
+lib_LTLIBRARIES += libsdsp_default_listener.la
+libsdsp_default_listener_la_SOURCES = $(LIBDEFAULT_LISTENER_SOURCES)
+libsdsp_default_listener_la_DEPENDENCIES = libsdsprpc.la
+libsdsp_default_listener_la_LDFLAGS = libsdsprpc.la -shared -module -avoid-version
+libsdsp_default_listener_la_CFLAGS = $(SDSP_CFLAGS)
+
+
+bin_PROGRAMS = adsprpcd cdsprpcd sdsprpcd
 
 adsprpcddir = $(libdir)
 adsprpcd_SOURCES = adsprpcd.c
@@ -82,6 +96,14 @@ cdsprpcd_SOURCES = cdsprpcd.c
 cdsprpcd_DEPENDENCIES = libcdsp_default_listener.la
 cdsprpcd_CFLAGS = -I$(top_srcdir)/inc -DDEFAULT_DOMAIN_ID=3
 cdsprpcd_LDADD =  -ldl
+
+
+sdsprpcddir = $(libdir)
+sdsprpcd_SOURCES = sdsprpcd.c
+sdsprpcd_DEPENDENCIES = libsdsp_default_listener.la
+sdsprpcd_CFLAGS = -I$(top_srcdir)/inc -DDEFAULT_DOMAIN_ID=2
+sdsprpcd_LDADD =  -ldl
+
 
 otherincludedir = $(includedir)/fastrpc
 otherinclude_HEADERS = $(top_srcdir)/inc/*.h

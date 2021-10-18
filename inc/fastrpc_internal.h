@@ -39,6 +39,7 @@
 #define FASTRPC_IOCTL_FREE_DMA_BUFF 	_IOWR('R', 2, uint32_t)
 #define FASTRPC_IOCTL_INVOKE        	_IOWR('R', 3, struct fastrpc_invoke)
 #define FASTRPC_IOCTL_INIT_ATTACH 		_IO('R', 4)
+#define FASTRPC_IOCTL_INIT_ATTACH_SNS	_IO('R', 8)
 #define FASTRPC_IOCTL_INIT_CREATE 		_IOWR('R', 5, struct fastrpc_init_create)
 #define FASTRPC_IOCTL_MMAP				_IOWR('R', 6, struct fastrpc_ioctl_mmap)
 #define FASTRPC_IOCTL_MUNMAP			_IOWR('R', 7, struct fastrpc_ioctl_munmap)

@@ -1628,6 +1628,7 @@ static int apps_dev_init(int domain) {
 	apps_std_FILE fh = -1;
 	int battach;
 	uint32_t info = domain & DOMAIN_ID_MASK;
+	unsigned long request;
 
 	FARF(HIGH, "starting %s for domain %d", __func__, domain);
 	pthread_mutex_lock(&hlist[domain].mut);
@@ -1643,7 +1644,10 @@ static int apps_dev_init(int domain) {
 		//keep the memory we used to allocate
 		if (battach == GUEST_OS || battach == GUEST_OS_SHARED) {
 			FARF(HIGH, "%s: attaching to guest OS for domain %d", __func__, domain);
-			VERIFY(!ioctl(hlist[domain].dev, FASTRPC_IOCTL_INIT_ATTACH) || errno == ENOTTY);
+			request = (domain == SDSP_DOMAIN_ID) ?
+					FASTRPC_IOCTL_INIT_ATTACH_SNS :
+					FASTRPC_IOCTL_INIT_ATTACH;
+			VERIFY(!ioctl(hlist[domain].dev, request) || errno == ENOTTY);
 		} else if (battach == USER_PD) {
 			uint64 len = 0;
 			uint64 filelen = 0;
