@@ -1293,7 +1293,7 @@ void HAP_debug(const char *msg, int level, const char *filename, int line) {
 #else
 extern const char* __progname;
 void HAP_debug(const char *msg, int level, const char *filename, int line) {
-   printf("hello %s - %s:%d: %s", __progname, filename, line, msg);
+   printf("%s - %s:%d: %s\n", __progname, filename, line, msg);
 }    
 #endif
 
