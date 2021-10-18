@@ -1339,8 +1339,11 @@ static void domain_deinit(int domain) {
       } else {
          adsp_current_process_exit();
       }
-
-      listener_android_domain_deinit(domain);
+      /* The exit code above doesn't seem to work for the sensor DSP.
+       * We get stuck waiting for the listener thread. */
+      if (domain != SDSP_DOMAIN_ID) {
+         listener_android_domain_deinit(domain);
+      }
       deinitFileWatcher(domain);
       fastrpc_perf_deinit();
       fastrpc_latency_deinit(&hlist[domain].qos);
