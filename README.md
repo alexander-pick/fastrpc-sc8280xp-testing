@@ -3,7 +3,6 @@ This document gives quick instructions and status on simple testing of FastRPC o
 
 # FastRPC Status
 | SoC      | DSP      | Kernel | get_serial | calculator |
-|          |          | version| (testapp)  | (testapp)  |
 | -------- | -------- |------- | ---------  | -----------|
 | sdm845   | ADSP     |        |            |            |        
 |          | CSSP     |        |            |            |
