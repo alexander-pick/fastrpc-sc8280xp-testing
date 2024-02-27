@@ -1,5 +1,8 @@
 This document gives quick instructions and status on simple testing of FastRPC on various Qualcomm SoC with upstream linux kernel
 
+## Test Instructions
+
+https://git.codelinaro.org/linaro/qcomlt/fastrpc/-/wikis/Testing-FastRPC
 
 # FastRPC Status
 | SoC      | DSP      | Kernel | get_serial | calculator |
