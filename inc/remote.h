@@ -113,7 +113,8 @@ typedef union {
 #define DOMAIN_ID_MASK 3
 
 #ifndef DEFAULT_DOMAIN_ID
-#define DEFAULT_DOMAIN_ID 0
+//@API this is required to not end up with inaccessible adsp as default domain
+#define DEFAULT_DOMAIN_ID 3
 #endif
 
 #define ADSP_DOMAIN_ID    0

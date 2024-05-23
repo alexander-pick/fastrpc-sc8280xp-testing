@@ -33,6 +33,7 @@
 #include "AEEQList.h"
 #include "AEEstd.h"
 #include "apps_std.h"
+#include "HAP_farf.h"
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -61,6 +62,7 @@ struct rpc_info
 extern int open_device_node(int domain);
 static int rpcmem_open_dev()
 {
+	//API: why is that hardcoded?
 	return open_device_node(3);
 }
 
@@ -128,10 +130,13 @@ void *rpcmem_alloc_internal(int heapid, uint32 flags, int size)
 	QList_AppendNode(&rpclst, &rinfo->qn);
 	pthread_mutex_unlock(&rpcmt);
 
+	FARF(HIGH, "ioctl(FASTRPC_IOCTL_ALLOC_DMA_BUFF) - %p", rinfo->aligned_buf);
+
 	return rinfo->aligned_buf;
 bail:
 	if (nErr)
 	{
+		FARF(HIGH, "rpcmem_alloc_internal() - error, bail out called");
 		if (rinfo)
 		{
 			if (rinfo->buf)

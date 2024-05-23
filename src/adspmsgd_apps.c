@@ -72,7 +72,7 @@ int adspmsgd_apps_log(const unsigned char *log_message_buffer,
 {
     LogNode *logMessage = (LogNode *)log_message_buffer;
     while (  (log_message_bufferLen  > 0) && (logMessage != NULL)) {
-        printf("adsprpc: %s:%d:0x%x:%s", logMessage->file, logMessage->line,
+        printf("rpc: %s:%d:0x%x: %s\n", logMessage->file, logMessage->line,
             logMessage->thread_id, logMessage->str);
         logMessage++;
         log_message_bufferLen -= sizeof(LogNode);

@@ -575,16 +575,17 @@ static int open_mod_table_open(struct open_mod_table* me, const char* uri, remot
    if(pdlErr) {
       *pdlErr = 0;
    }
-   if(0 != open_mod_table_open_static_override(me, uri, handle)) {
-      VERIFY(AEE_SUCCESS == (nErr = open_mod_table_open_dynamic(me, uri, handle, dlerr, dlerrorLen, &dlErr)));
-      if(dlErr != 0) {
-         FARF(HIGH, "dynammic open failed, trying static");
+   //@API don't need dynamic loading as I dont have the splitted libs on Linux
+   // if(0 != open_mod_table_open_static_override(me, uri, handle)) {
+   //    VERIFY(AEE_SUCCESS == (nErr = open_mod_table_open_dynamic(me, uri, handle, dlerr, dlerrorLen, &dlErr)));
+   //    if(dlErr != 0) {
+         //FARF(HIGH, "dynammic open failed, trying static");
          if(0 != open_mod_table_open_static(me, uri, handle)) {
             if(pdlErr) {
                *pdlErr = dlErr;
             }
-         }
-      }
+      //    }
+      // }
    }
 bail:
    FARF(HIGH, "done open for %s rv %d handle: %p", uri, nErr, *handle);
@@ -707,7 +708,8 @@ bail:
    if(om) {
       open_mod_close(me, om);
    }
-   FARF(HIGH, "invoke rv %p %x %x", handle, sc, nErr);
+   //@API: disabled, very verbose
+   //FARF(HIGH, "invoke rv %p %x %x", handle, sc, nErr);
    return nErr;
 }
 

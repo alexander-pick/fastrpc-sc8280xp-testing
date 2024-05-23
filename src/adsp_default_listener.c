@@ -26,11 +26,12 @@
  * OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN
  * IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-//#ifndef VERIFY_PRINT_ERROR
-//#define VERIFY_PRINT_ERROR
-//#endif
+// #ifndef VERIFY_PRINT_ERROR
+// #define VERIFY_PRINT_ERROR
+// #endif
 
 #define FARF_ERROR 1
+#define PD_EXCEPTION_LOGGING 1 // API: enable exception logging
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -45,62 +46,81 @@
 #include "HAP_farf.h"
 #include "adspmsgd_adsp.h"
 
-int adsp_default_listener_start(int argc, char* argv[]) {
-   struct pollfd pfd;
-   eventfd_t event = 0;
-   remote_handle fd;
-   int nErr = AEE_SUCCESS;
-   char *name = NULL;
-   int namelen = 0;
-   (void)argc;
-   (void)argv;
-   if (argc > 1) {
-      namelen = strlen(ITRANSPORT_PREFIX "createstaticpd:") + strlen(argv[1]);
-      name = (char *)malloc((namelen + 1) * sizeof(char));
-      VERIFYC(NULL != name, AEE_ENOMEMORY);
-      std_strlcpy(name,  ITRANSPORT_PREFIX "createstaticpd:", strlen(ITRANSPORT_PREFIX "createstaticpd:")+1);
-      std_strlcat(name, argv[1], namelen+1);
-   } else {
-      namelen = strlen(ITRANSPORT_PREFIX "attachguestos");
-      name = (char *)malloc((namelen + 1) * sizeof(char));
-      VERIFYC(NULL != name, AEE_ENOMEMORY);
-      std_strlcpy(name,  ITRANSPORT_PREFIX "attachguestos", strlen(ITRANSPORT_PREFIX "attachguestos")+1);
-   }
-   VERIFY_EPRINTF("adsp_default_listener_start started\n");
-   VERIFYC(!setenv("ADSP_LISTENER_MEM_CACHE_SIZE", "1048576", 0), AEE_ESETENV);
-   VERIFY(0 == (nErr = remote_handle_open(name, &fd)));
-   VERIFY(0 == (nErr = adsp_default_listener_register()));
-   VERIFY(0 == (nErr = remote_handle_open(ITRANSPORT_PREFIX "geteventfd",
-                                  (remote_handle*)&pfd.fd)));
-   free(name);
-   name = NULL;
-   pfd.events = POLLIN;
-   pfd.revents = 0;
+int adsp_default_listener_start(int argc, char *argv[])
+{
+    struct pollfd pfd;
+    eventfd_t event = 0;
+    remote_handle fd;
+    int nErr = AEE_SUCCESS;
+    char *name = NULL;
+    int namelen = 0;
+    (void)argc;
+    (void)argv;
+    FARF(HIGH, "argc: %d", argc);
+    if (argc > 1)
+    {
+        FARF(HIGH, "createstaticpd");
+        namelen = strlen(ITRANSPORT_PREFIX "createstaticpd:") + strlen(argv[1]);
+        name = (char *)malloc((namelen + 1) * sizeof(char));
+        VERIFYC(NULL != name, AEE_ENOMEMORY);
+        std_strlcpy(name, ITRANSPORT_PREFIX "createstaticpd:", strlen(ITRANSPORT_PREFIX "createstaticpd:") + 1);
+        std_strlcat(name, argv[1], namelen + 1);
+    }
+    else
+    {
+        FARF(HIGH, "attachguestos");
+        namelen = strlen(ITRANSPORT_PREFIX "attachguestos");
+        name = (char *)malloc((namelen + 1) * sizeof(char));
+        VERIFYC(NULL != name, AEE_ENOMEMORY);
+        std_strlcpy(name, ITRANSPORT_PREFIX "attachguestos", strlen(ITRANSPORT_PREFIX "attachguestos") + 1);
+    }
+    FARF(HIGH, "adsp_default_listener_start started for %s", name);
+    VERIFYC(!setenv("ADSP_LISTENER_MEM_CACHE_SIZE", "1048576", 0), AEE_ESETENV);
+
+    FARF(HIGH, "adsp_default_listener_start -> remote_handle_open(%s)", name);
+    VERIFY(0 == (nErr = remote_handle_open(name, &fd)));
+
+    FARF(HIGH, "adsp_default_listener_start -> adsp_default_listener_register()");
+    VERIFY(0 == (nErr = adsp_default_listener_register()));
+
+    FARF(HIGH, "adsp_default_listener_start -> remote_handle_open()");
+    VERIFY(0 == (nErr = remote_handle_open(ITRANSPORT_PREFIX "geteventfd", (remote_handle *)&pfd.fd)));
+    free(name);
+    name = NULL;
+    pfd.events = POLLIN;
+    pfd.revents = 0;
 #ifdef PD_EXCEPTION_LOGGING
 
-if(argc == 1){
-	adspmsgd_adsp_init2();
-}
+    if (argc == 1)
+    {
+        adspmsgd_adsp_init2();
+    }
 
 #endif
-   while (1) {
-     VERIFYC(0 < poll(&pfd, 1, -1), AEE_EPOLL);
-     VERIFYC(0 == eventfd_read(pfd.fd, &event), AEE_EEVENTREAD);
-     if (event) {
-       break;
-     }
-   }
+    while (1)
+    {
+        VERIFYC(0 < poll(&pfd, 1, -1), AEE_EPOLL);
+        VERIFYC(0 == eventfd_read(pfd.fd, &event), AEE_EEVENTREAD);
+        if (event)
+        {
+            break;
+        }
+    }
 bail:
 #ifdef PD_EXCEPTION_LOGGING
-if(argc == 1)
-	adspmsgd_adsp_deinit();
+    if (argc == 1)
+    {
+        adspmsgd_adsp_deinit();
+    }
 #endif
-   if(nErr != AEE_SUCCESS) {
-      if(name != NULL){
-         free(name);
-         name = NULL;
-      }
-      //FARF(ERROR, "Error %x, adsp_default_listener_start exiting\n", nErr);
-   }
-   return nErr;
+    if (nErr != AEE_SUCCESS)
+    {
+        if (name != NULL)
+        {
+            free(name);
+            name = NULL;
+        }
+        // FARF(ERROR, "Error %x, adsp_default_listener_start exiting\n", nErr);
+    }
+    return nErr;
 }

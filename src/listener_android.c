@@ -160,7 +160,7 @@ static void* listener(void* arg) {
    uint32 flags = eflags == 0 ? RPCMEM_HEAP_DEFAULT : (uint32)atoi(eflags);
 
    if(eheap || eflags) {
-      FARF(HIGH, "listener using ion heap: %d flags: %x\n", (int)heapid, (int)flags);
+      FARF(HIGH, "listener using ion heap: %d flags: %x", (int)heapid, (int)flags);
    }
 
    VERIFYC(NULL != (bufs = rpcmem_realloc(heapid, flags, 0, 0, sizeof(*bufs))), AEE_ENORPCMEMORY);
@@ -275,7 +275,7 @@ static void* listener2(void* arg) {
    memset(args, 0, sizeof(args));
    set_thread_context((int)(me - &linfo[0]));
    if(eheap || eflags || emin) {
-      FARF(HIGH, "listener using ion heap: %d flags: %x cache: %lld\n", (int)heapid, (int)flags, cache_size);
+      FARF(HIGH, "listener using ion heap: %d flags: %x cache: %lld", (int)heapid, (int)flags, cache_size);
    }
 
    do {
@@ -284,11 +284,13 @@ static void* listener2(void* arg) {
       if(result != 0) {
          outBufsLen = 0;
       }
-      FARF(HIGH, "responding message for %x %x %x %x", ctx, handle, sc, result);
+      //@API: disabled, very verbose
+      //FARF(HIGH, "responding message for %x %x %x %x", ctx, handle, sc, result);
       nErr = __QAIC_HEADER(adsp_listener_next2)(
                         ctx, result, outBufs, outBufsLen,
                         &ctx, &handle, &sc, inBufs, inBufsLen, &inBufsLenReq);
-      FARF(HIGH, "got message for %x %x %x %x", ctx, handle, sc, nErr);
+      //@API: disabled very verbose
+      //FARF(HIGH, "got message for %x %x %x %x", ctx, handle, sc, nErr);
       if(nErr) {
          VERIFY_EPRINTF("listener protocol failure %x\n", nErr);
          if (nErr == AEE_EINTERRUPTED) {
@@ -404,6 +406,9 @@ void listener_android_deinit(void) {
 }
 
 int listener_android_init(void) {
+
+   FARF(HIGH, "listener_android_init()");
+
    int nErr = 0;
 
    VERIFY(AEE_SUCCESS == (nErr = PL_INIT(mod_table)));
@@ -421,6 +426,9 @@ bail:
 }
 
 void listener_android_domain_deinit(int domain) {
+
+   FARF(HIGH, "listener_android_domain_deinit() domain: %d", domain);
+
    struct listener* me = &linfo[domain];
 
    FARF(HIGH, "fastrpc listener joining to exit");
@@ -436,6 +444,9 @@ void listener_android_domain_deinit(int domain) {
 }
 
 int listener_android_domain_init(int domain) {
+   
+   FARF(HIGH, "listener_android_domain_init() domain: %d", domain);
+
    struct listener* me = &linfo[domain];
    int nErr = 0;
 
@@ -464,6 +475,7 @@ int listener_android_geteventfd(int domain, int *fd) {
 
    VERIFYC(-1 != me->eventfd, AEE_EINVALIDFD);
    *fd = me->eventfd;
+   FARF(HIGH, "my eventfd=%x", me->eventfd);
 bail:
    if (nErr != AEE_SUCCESS) {
 	VERIFY_EPRINTF("Error %x: listener android getevent file descriptor failed for domain %d\n", nErr, domain);

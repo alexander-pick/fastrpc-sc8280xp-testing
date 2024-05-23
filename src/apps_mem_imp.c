@@ -46,9 +46,20 @@
 #include "fastrpc_apps_user.h"
 #include "platform_libs.h"
 
-#define ADSP_MMAP_HEAP_ADDR 4
-#define ADSP_MMAP_REMOTE_HEAP_ADDR 8
-#define ADSP_MMAP_ADD_PAGES   0x1000
+// #define ADSP_MMAP_HEAP_ADDR 4
+// #define ADSP_MMAP_REMOTE_HEAP_ADDR 8
+// #define ADSP_MMAP_ADD_PAGES   0x1000
+
+/* Add memory to static PD pool, protection thru XPU */
+#define ADSP_MMAP_HEAP_ADDR  4
+/* MAP static DMA buffer on DSP User PD */
+#define ADSP_MMAP_DMA_BUFFER  6
+/* Add memory to static PD pool protection thru hypervisor */
+#define ADSP_MMAP_REMOTE_HEAP_ADDR  8
+/* Add memory to userPD pool, for user heap */
+#define ADSP_MMAP_ADD_PAGES 0x1000
+/* Add memory to userPD pool, for LLC heap */
+#define ADSP_MMAP_ADD_PAGES_LLC 0x3000,
 
 static QList memlst;
 static pthread_mutex_t memmt;
@@ -209,7 +220,7 @@ __QAIC_IMPL_EXPORT int __QAIC_IMPL(apps_mem_share_map)(int fd, int size, uint64*
    *vadsp = 0;
    VERIFYC(MAP_FAILED != (buf = (void *)mmap(NULL, size,
                            PROT_READ|PROT_WRITE, MAP_SHARED, fd, 0)), AEE_EMMAP);
-   VERIFY(AEE_SUCCESS == (nErr = remote_mmap64(fd, 0, (uint64_t)buf, size, (uint64_t*)vadsp)));
+   VERIFY(AEE_SUCCESS == (nErr = remote_mmap64(fd, 0, (uint64_t)buf, size, (uint64_t*)vadsp))); // @API: 0x0 is unsupported as flag?
    pbuf = (uint64_t)buf;
    *vapps = pbuf;
    minfo->vapps = *vapps;

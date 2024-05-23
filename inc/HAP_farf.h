@@ -134,27 +134,27 @@
 #define FARF_ALWAYS_LEVEL  HAP_LEVEL_HIGH
 
 #ifndef FARF_LOW
-#define FARF_LOW           0    /* 0 turns me off */
+#define FARF_LOW           1    /* 0 turns me off */
 #endif
 #define FARF_LOW_LEVEL     HAP_LEVEL_LOW
 
 #ifndef FARF_MEDIUM
-#define FARF_MEDIUM        0    /* 0 turns me off */
+#define FARF_MEDIUM        1    /* 0 turns me off */
 #endif
 #define FARF_MEDIUM_LEVEL  HAP_LEVEL_MEDIUM
 
 #ifndef FARF_HIGH
-#define FARF_HIGH          0    /* 0 turns me off */
+#define FARF_HIGH          1    /* 0 turns me off */
 #endif
 #define FARF_HIGH_LEVEL    HAP_LEVEL_HIGH
 
 #ifndef FARF_ERROR
-#define FARF_ERROR         0    /* 0 turns me off */
+#define FARF_ERROR         1    /* 0 turns me off */
 #endif
 #define FARF_ERROR_LEVEL   HAP_LEVEL_ERROR
 
 #ifndef FARF_FATAL
-#define FARF_FATAL         0    /* 0 turns me off */
+#define FARF_FATAL         1    /* 0 turns me off */
 #endif
 #define FARF_FATAL_LEVEL   HAP_LEVEL_FATAL
 

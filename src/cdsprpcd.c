@@ -48,7 +48,7 @@ int main(int argc, char *argv[]) {
   void *cdsphandler = NULL;
   adsp_default_listener_start_t listener_start;
 
-  VERIFY_EPRINTF("cdsp daemon starting");
+  VERIFY_EPRINTF("cdsp daemon starting\n");
   while (1) {
     if(NULL != (cdsphandler = dlopen(CDSP_DEFAULT_LISTENER_NAME, RTLD_NOW))) {
       if(NULL != (listener_start =
